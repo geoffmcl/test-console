@@ -19,10 +19,12 @@ For sure, still a WIP!
 
 The building is cmake, so just change diectory to build, and/or build.x64, and maybe the `build-me.bat` there in each will work... but you can use the standard cmake mantra 
 
+````
  $ cd build
  $ cmake ..
  $ cmake --build . -config Release
- 
+````
+
 Have FUN!
 
 Geoff.  
