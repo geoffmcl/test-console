@@ -1,0 +1,4 @@
+ex.log
+libsprtf.a
+test-con1.exe
+test-con2.exe

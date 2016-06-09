@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+bldlog-1.txt
+cmake_install.cmake
+libsprtf.a
+test-con1.exe
+test-con2.exe
