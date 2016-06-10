@@ -72,7 +72,7 @@ int main( int argc, char **argv )
         // ##################################
         log_output(2);  // 2
         // ##################################
-        if (type == FILE_TYPE_DISK) {
+        if (type == FILE_TYPE_CHAR) {
             freopen("conout$", "w", stdout);
             freopen("conout$", "w", stderr);
             dnfro = 1;
