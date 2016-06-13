@@ -15,6 +15,9 @@
 
 static const char *module = "test-con2";
 
+static int add_free_console = 1;
+static int sleep_delay_secs = 0;
+
 // add shorter, clearer message of 'type'
 typedef struct tagDW2STG {
     DWORD val;
@@ -52,6 +55,76 @@ static void log_output( int n )
     fflush(stderr);
 }
 
+void give_help( char *name )
+{
+    SPRTF("%s: usage: [options]\n", module);
+    SPRTF("Options:\n");
+    SPRTF(" --help  (-h or -?) = This help and exit(2)\n");
+    SPRTF(" --no-free     (-n) = If 'attached' to a console, do not do 'FreeConsole'\n");
+    SPRTF("\n");
+    SPRTF("  This program is to ONLY test various API actions in this SUBSYSTEM:WINDOWS\n");
+    SPRTF("  app. First how to keep redirection of stdout and/or stderr from being 'broken'.\n");
+    SPRTF("  Next provide the missing channels, stdout or stderr, if run in a console.\n");
+    SPRTF("  And finally, how to cause the prompt to be refreshed on certain exits.\n");
+    SPRTF("\n");
+    SPRTF("  The tests: Each is run **in** an existing console -\n");
+    SPRTF("  1. test-con2 > temp1.txt 2>&1\n");
+    SPRTF("  2. test-con2 > temp1.txt\n");
+    SPRTF("  3. test-con2 2> temp1.txt\n");
+    SPRTF("  4. test-con2\n");
+    SPRTF("  It is expected the command prompt will be repainted on app exit.\n");
+    SPRTF("\n");
+    SPRTF("  Since this is about certain messages being seen, or being in the redirected\n");
+    SPRTF("  file, many messages are also output to a file '%s'.\n", get_log_file());
+
+}
+
+int parse_args( int argc, char **argv )
+{
+    int i,i2,c;
+    char *arg, *sarg;
+    for (i = 1; i < argc; i++) {
+        arg = argv[i];
+        i2 = i + 1;
+        if (*arg == '-') {
+            sarg = &arg[1];
+            while (*sarg == '-')
+                sarg++;
+            c = *sarg;
+            switch (c) {
+            case 'h':
+            case '?':
+                give_help(argv[0]);
+                return 2;
+                break;
+            case 'n':
+                add_free_console = 0;
+                break;
+            case 's':
+                if (i2 < argc) {
+                    i++;
+                    sarg = argv[i];
+                    sleep_delay_secs = atoi(sarg);
+                } else {
+                    SPRTF("%s: Error: Expected integer following '%s'! Aborting...\n", module, arg);
+                    return 1;
+                }
+                break;
+
+            // TODO: Other arguments
+            default:
+                SPRTF("%s: Unknown argument '%s'. Try -? for help...\n", module, arg);
+                return 1;
+            }
+        } else {
+            // bear argument
+            SPRTF("%s: Unknown bear argument '%s'. Try -? for help...\n", module, arg);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 // main app entry
 int main( int argc, char **argv )
 {
@@ -70,6 +143,13 @@ int main( int argc, char **argv )
     char *pmsg;
     int len = sprintf(nb, "HOut is %s (type %d) - handle: %p (%d)", pft, type, hout, STD_OUTPUT_HANDLE);
     len += sprintf(EndBuf(nb), "\nHErr is %s (type %d) - handle: %p (%d)", pfte, etyp, herr, STD_ERROR_HANDLE);
+
+    iret = parse_args( argc, argv );
+    if (iret) {
+        if (iret == 2)
+            iret = 0;
+        return iret;
+    }
 
     // ##################################
     log_output(1);    // 1
@@ -113,7 +193,7 @@ int main( int argc, char **argv )
     log_output(3); // 3
     // ##################################
 
-    if (attached) {
+    if (attached && add_free_console) {
         SPRTF("%s: Doing FreeConsole...\n", module );
         if (FreeConsole()) {
             attached = 0;
@@ -124,12 +204,24 @@ int main( int argc, char **argv )
             SPRTF("%s: Done FreeConsole...\n", module );
         }
     } else {
-        SPRTF("%s: Not attached to a console...\n", module );
+        if (add_free_console) {
+            SPRTF("%s: Not attached to a console...\n", module );
+        } else {
+            SPRTF("%s: As requested, did not do FreeConsole...\n", module );
+        }
     }
 
     // ##################################
     log_output(4);  // 4
     // ##################################
+
+    if (sleep_delay_secs) {
+        int sav = add_sys_time(1);
+        SPRTF("%s: Sleeping for %d secs...\n", module, sleep_delay_secs);
+        Sleep( sleep_delay_secs * 1000 );
+        SPRTF("%s: Back after %d secs sleep...\n", module, sleep_delay_secs);
+        add_sys_time(sav);
+    }
     return iret;
 }
 
