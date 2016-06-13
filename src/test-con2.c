@@ -130,6 +130,10 @@ int main( int argc, char **argv )
 {
     int iret = 0;
     int attached = 0;
+    // get 'stdin' info
+    HANDLE hin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD itype = GetFileType(hin);
+    char *pint = GetFileTypeStg(itype);
     // get 'stdout' info
     HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD type = GetFileType(hout);
@@ -143,6 +147,7 @@ int main( int argc, char **argv )
     char *pmsg;
     int len = sprintf(nb, "HOut is %s (type %d) - handle: %p (%d)", pft, type, hout, STD_OUTPUT_HANDLE);
     len += sprintf(EndBuf(nb), "\nHErr is %s (type %d) - handle: %p (%d)", pfte, etyp, herr, STD_ERROR_HANDLE);
+    len += sprintf(EndBuf(nb), "\nHIn  is %s (type %d) - handle: %p (%d)", pint, itype, hin, STD_INPUT_HANDLE);
 
     iret = parse_args( argc, argv );
     if (iret) {
