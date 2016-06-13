@@ -3,7 +3,7 @@
 @echo Build %TMPPRJ% project, in 64-bits
 @set TMPLOG=bldlog-1.txt
 @set BLDDIR=%CD%
-@set BLDDBG=0
+@set BLDDBG=1
 @set TMPROOT=..
 @set SET_BAT=%ProgramFiles(x86)%\Microsoft Visual Studio 10.0\VC\vcvarsall.bat
 @if NOT EXIST "%SET_BAT%" goto NOBAT
@@ -22,7 +22,7 @@
 @cd %BLDDIR%
 
 :DNARCH
-@set TMPOPTS
+@set TMPOPTS=
 @REM set TMPOPTS=-DCMAKE_INSTALL_PREFIX=%TMPINST%
 @set TMPOPTS=%TMPOPTS% -G "Visual Studio 10 Win64"
 
