@@ -7,6 +7,9 @@
  * Experiments creating a windows app, ie /SUBSYSTEM:WINDOWS, and try to attach 
  * to any existing console, and maintain std io, stdout, stderr redirection...
  *
+ * Reference *Daniel Tillet
+ *https://www.tillett.info/2013/05/13/how-to-create-a-windows-program-hat-works-as-both-as-a-gui-and-console-application/comment-page-1/#comment-20904
+ *
 \*/
 
 #include <stdio.h>
@@ -125,6 +128,24 @@ int parse_args( int argc, char **argv )
     return 0;
 }
 
+// See Reference
+static void sendEnterKey(void) 
+{
+    INPUT ip; 
+    // Set up a generic keyboard event. 
+    ip.type = INPUT_KEYBOARD; 
+    ip.ki.wScan = 0; // hardware scan code for key 
+    ip.ki.time = 0; 
+    ip.ki.dwExtraInfo = 0;  
+    // Send the "Enter" key 
+    ip.ki.wVk = 0x0D; // virtual-key code for the "Enter" key 
+    ip.ki.dwFlags = 0; // 0 for key press 
+    SendInput(1, &ip, sizeof(INPUT));  
+    // Release the "Enter" key 
+    ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release 
+    SendInput(1, &ip, sizeof(INPUT)); 
+}
+
 // main app entry
 int main( int argc, char **argv )
 {
@@ -198,16 +219,19 @@ int main( int argc, char **argv )
     log_output(3); // 3
     // ##################################
 
-    if (attached && add_free_console) {
-        SPRTF("%s: Doing FreeConsole...\n", module );
+
+    /*if (attached && add_free_console) {
         if (FreeConsole()) {
             attached = 0;
         }
         if (attached) {
             SPRTF("%s: FreeConsole FAILED...\n", module );
         } else {
-            SPRTF("%s: Done FreeConsole...\n", module );
-        }
+            SPRTF("%s: Done FreeConsole...\n", module ); 
+        } */
+    if (attached && (GetConsoleWindow() == GetForegroundWindow())) {
+        sendEnterKey();
+        SPRTF("%s: Sending Enter key...\n", module );
     } else {
         if (add_free_console) {
             SPRTF("%s: Not attached to a console...\n", module );
