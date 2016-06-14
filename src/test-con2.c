@@ -149,6 +149,7 @@ static void sendEnterKey(void)
 // main app entry
 int main( int argc, char **argv )
 {
+    HWND parent;
     int iret = 0;
     int attached = 0;
     // get 'stdin' info
@@ -201,6 +202,7 @@ int main( int argc, char **argv )
             (dnfro1 ? "Done fropen" : "is disk file"),
             (dnfro2 ? "Done fropen" : "is disk file"));
         attached = 1;
+        parent = GetConsoleWindow(); // preserve the handle to window
     } else {
         // obviously **NOT** run in a 'console'
         err = GetLastError();
@@ -219,19 +221,14 @@ int main( int argc, char **argv )
     log_output(3); // 3
     // ##################################
 
-
-    /*if (attached && add_free_console) {
-        if (FreeConsole()) {
-            attached = 0;
-        }
-        if (attached) {
+    if (attached && add_free_console) {
+        SPRTF("%s: Doing FreeConsole() call...\n", module);
+        if (!FreeConsole()) {
             SPRTF("%s: FreeConsole FAILED...\n", module );
-        } else {
+        }
+        else {
             SPRTF("%s: Done FreeConsole...\n", module ); 
-        } */
-    if (attached && (GetConsoleWindow() == GetForegroundWindow())) {
-        sendEnterKey();
-        SPRTF("%s: Sending Enter key...\n", module );
+        }
     } else {
         if (add_free_console) {
             SPRTF("%s: Not attached to a console...\n", module );
@@ -250,6 +247,11 @@ int main( int argc, char **argv )
         Sleep( sleep_delay_secs * 1000 );
         SPRTF("%s: Back after %d secs sleep...\n", module, sleep_delay_secs);
         add_sys_time(sav);
+    }
+    // Check to see if we were attached & console is foreground, then simulate 'Enter' key strike to re-paint prompt
+    if (attached && (parent == GetForegroundWindow())) {
+        sendEnterKey();
+        SPRTF("%s: Sending Enter key...\n", module);
     }
     return iret;
 }
