@@ -150,6 +150,8 @@ static void sendEnterKey(void)
 int main( int argc, char **argv )
 {
     HWND parent;
+    int dnfro1 = 0;
+    int dnfro2 = 0;
     int iret = 0;
     int attached = 0;
     // get 'stdin' info
@@ -183,8 +185,6 @@ int main( int argc, char **argv )
     // ##################################
 
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-        int dnfro1 = 0;
-        int dnfro2 = 0;
         // ##################################
         log_output(2);  // 2
         // ##################################
@@ -250,8 +250,10 @@ int main( int argc, char **argv )
     }
     // Check to see if we were attached & console is foreground, then simulate 'Enter' key strike to re-paint prompt
     if (attached && (parent == GetForegroundWindow())) {
-        sendEnterKey();
-        SPRTF("%s: Sending Enter key...\n", module);
+        if ((dnfro1 == 1) || (dnfro2 == 1)) {
+            sendEnterKey();
+            SPRTF("%s: Sending Enter key...\n", module);
+        }
     }
     return iret;
 }
