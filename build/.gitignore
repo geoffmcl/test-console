@@ -13,4 +13,8 @@ cmake_install.cmake
 ipch/*
 *.sdf
 *.suo
+Makefile
+libsprtf.a
+test-con1
+test-locale
 

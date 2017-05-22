@@ -8,7 +8,11 @@
 
 #include <stdio.h>
 #include <string.h> // for strdup(), ...
+#ifdef _WIN32
 #include <Windows.h>
+#else
+#include <stdlib.h> // for getenv, ...
+#endif
 #include <string>
 #include <vector>
 #include <iostream> // for cout, ...
@@ -146,7 +150,7 @@ int main( int argc, char **argv )
 
     string_list sl = FGLocale_getUserLanguage(); // actions of app
     size_t ii, max = sl.size();
-    printf("Got %d languages...\n", (int)max);
+    printf("Got %d language(s)...\n", (int)max);
     for (ii = 0; ii < max; ii++) {
         printf("%d: %s\n", (int)(ii + 1), sl[ii].c_str());
     }
