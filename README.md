@@ -6,11 +6,12 @@ The idea if to find WIN32 kludge code to still be able to attach to the console 
 
 I have called it a mess, on a mess, on a mess... maybe it is worse than that!
 
-There are two apps -
+There are three apps -
 
  1. test-con1 - a standard windows console app, where such io redirection works fine, perfectly...
  2. test-con2 - a standard windows windows app, where redirection is **broken**!
- 
+ 3. test-locale - console app to show active language
+
 That is what more **mess** needs be added to test-con2 to make it work somewhat similar to test-con1, at least as far as stdout and stderr are concerned...
 
 There is also a small library, sprtf, to log output to a file and stdout...
@@ -28,6 +29,6 @@ The building is cmake, so just change diectory to build, and/or build.x64, and m
 Have FUN!
 
 Geoff.  
-20160609
+20170522 - 20160609
 
 ; eof
