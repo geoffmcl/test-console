@@ -134,4 +134,25 @@ endif ()
 # deal with install, if any...
 #install( TARGETS ${name} DESTINATION bin )
 
+if (WIN32)
+    set(name test-con3)
+    set(dir src/Win32)
+    set(${name}_SRCS
+        ${dir}/${name}.cpp
+        ${dir}/${name}.h
+        ${dir}/${name}.rc
+        ${dir}/targetver.h
+        )
+    add_executable( ${name} WIN32 ${${name}_SRCS} )
+    if (add_LIBS)
+        target_link_libraries( ${name} ${add_LIBS} )
+    endif ()
+    if (MSVC)
+        set_target_properties( ${name} PROPERTIES DEBUG_POSTFIX d )
+    endif ()
+    # deal with install, if any...
+    #install( TARGETS ${name} DESTINATION bin )
+
+endif ()
+
 # eof
