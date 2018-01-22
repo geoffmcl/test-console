@@ -6,3 +6,5 @@ cmake_install.cmake
 libsprtf.a
 test-con1.exe
 test-con2.exe
+test-con3.exe
+test-locale.exe
