@@ -17,4 +17,5 @@ Makefile
 libsprtf.a
 test-con1
 test-locale
+*.VC.db
 
